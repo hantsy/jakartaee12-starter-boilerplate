@@ -1,0 +1,20 @@
+<ui:composition xmlns:ui="jakarta.faces.facelets"
+                template="/WEB-INF/layout/template.xhtml">
+
+    <ui:define name="pageTitle">Psst...something went wrong</ui:define>
+    <ui:define name="content">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>Error Details
+                    </div>
+                    <div class="card-body">
+                        <p class="text-danger fw-bold">#{ex}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

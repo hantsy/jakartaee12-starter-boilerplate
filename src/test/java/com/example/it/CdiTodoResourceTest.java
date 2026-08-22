@@ -1,0 +1,108 @@
+package com.example.it;
+
+
+import com.example.cdi.CdiTodoRepository;
+import com.example.domain.Todo;
+import com.example.rest.CdiTodoResource;
+import com.example.rest.CreateTodoCommand;
+import com.example.rest.RestActivator;
+import com.example.rest.TodoNotFoundExceptionMapper;
+import com.example.rest.UpdateTodoCommand;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit5.container.annotation.ArquillianTest;
+import org.jboss.arquillian.test.api.ArquillianResource;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+@ArquillianTest
+public class CdiTodoResourceTest {
+    private final static Logger LOGGER = Logger.getLogger(CdiTodoResourceTest.class.getName());
+
+    @Deployment(testable = false)
+    public static WebArchive createDeployment() {
+        WebArchive war = ShrinkWrap.create(WebArchive.class, "CdiTodoResourceTest.war")
+                .addPackage(Todo.class.getPackage())
+                .addPackage(CdiTodoRepository.class.getPackage())
+                .addClasses(
+                        CdiTodoResource.class,
+                        CreateTodoCommand.class,
+                        RestActivator.class,
+                        UpdateTodoCommand.class,
+                        TodoNotFoundExceptionMapper.class
+                )
+                // copy persistence to /WEB-INF/classes/META-INF/
+                .addAsResource("test-persistence.xml", "/META-INF/persistence.xml")
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        LOGGER.log(Level.INFO, "war archive: {0}", war.toString(true));
+        return war;
+    }
+
+    @ArquillianResource
+    URL baseUrl;
+
+    private Client client;
+
+    @BeforeEach
+    public void setup() {
+        LOGGER.log(Level.INFO, "base URL:{0}", new Object[]{baseUrl});
+        this.client = ClientBuilder.newClient();
+        //this.client.register()
+    }
+
+    @AfterEach
+    public void teardown() {
+        if (this.client != null) {
+            this.client.close();
+        }
+    }
+
+    @Test
+    public void testTodosAPI() throws Exception {
+        LOGGER.log(Level.INFO, " Running test:: testTodosAPI ... ");
+        final WebTarget allTodosTarget = client.target(URI.create(baseUrl.toExternalForm() + "api/cditodos"));
+        try (final Response allTodos = allTodosTarget.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(200, allTodos.getStatus());
+
+            //@formatter:off
+            List<Todo> todos = allTodos.readEntity(new GenericType<>() { });
+            //@formatter:on
+
+            LOGGER.log(Level.INFO, " Get /todods response: {0} ", todos);
+            assertEquals(2, todos.size());
+        }
+    }
+
+    @Test
+    public void testTodoNotFound() throws Exception {
+        LOGGER.log(Level.INFO, " Running test:: testTodoNotFound ... ");
+        final WebTarget getByIdTarget = client.target(URI.create(baseUrl.toExternalForm() + "api/cditodos/" + new Random().nextLong(10_000)));
+        try (final Response getById = getByIdTarget.request()
+                .accept(MediaType.APPLICATION_JSON)
+                .get()) {
+            assertEquals(404, getById.getStatus());
+        }
+    }
+
+}

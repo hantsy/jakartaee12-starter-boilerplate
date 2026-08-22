@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:faces="jakarta.faces">
+<f:view contentType="text/html" encoding="UTF-8">
+    <ui:insert name="metadata"></ui:insert>
+    <head faces:id="head">
+        <title>Jakarta EE Todo List - A JakartaEE Faces Sample</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
+        <!-- styles -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+              crossorigin="anonymous"/>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"/>
+        <link href="#{resource['css/main.css']}" rel="stylesheet"/>
+        <ui:insert name="headIncludes"></ui:insert>
+    </head>
+
+    <body faces:id="body" class="d-flex flex-column h-100">
+        <div class="header">
+            <ui:include src="/WEB-INF/layout/header.xhtml"/>
+        </div>
+
+        <main role="main" class="flex-shrink-0">
+            <div class="container">
+                <div faces:id="alertPanel">
+                    <ui:include src="/WEB-INF/layout/alert.xhtml"/>
+                </div>
+
+                <h1 class="page-header display-3">
+                    <ui:insert name="pageTitle"></ui:insert>
+                </h1>
+
+                <ui:insert name="content"/>
+            </div>
+        </main>
+
+        <ui:include src="/WEB-INF/layout/footer.xhtml"/>
+        <!-- Optional JavaScript -->
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+                crossorigin="anonymous"></script>
+        <ui:insert name="bodyIncludes"></ui:insert>
+    </body>
+</f:view>
+</html>
