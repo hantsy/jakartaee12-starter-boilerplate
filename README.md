@@ -8,7 +8,7 @@ A clean starter template for Jakarta EE 12 applications, targeting GlassFish 9 (
 
 ## Prerequisites
 
-* **Java 21**
+* **Java 25**
 * **Maven 3.9+** (Maven 4 is recommended)
 
 ## Build and Run
